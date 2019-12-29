@@ -4,19 +4,23 @@ name := "ant-design-admin-panel"
 
 scalaVersion := "2.12.8"
 
-npmDependencies in Compile += "react" -> "16.8.6"
-npmDependencies in Compile += "react-dom" -> "16.8.6"
-npmDependencies in Compile += "react-proxy" -> "1.1.8"
-npmDependencies in Compile += "react-router-dom" -> "5.1.2"
-npmDependencies in Compile += "antd" -> "3.26.3"
-npmDependencies in Compile += "ant-design-pro" -> "2.3.2"
+npmDependencies in Compile += "react"                  -> "16.8.6"
+npmDependencies in Compile += "react-dom"              -> "16.8.6"
+npmDependencies in Compile += "react-proxy"            -> "1.1.8"
+npmDependencies in Compile += "react-router-dom"       -> "5.1.2"
+npmDependencies in Compile += "antd"                   -> "3.26.3"
+npmDependencies in Compile += "ant-design-pro"         -> "2.3.2"
+npmDependencies in Compile += "@ant-design/pro-layout" -> "4.9.10"
+npmDependencies in Compile += "@ant-design/dark-theme" -> "1.0.3"
 
-npmDevDependencies in Compile += "file-loader" -> "3.0.1"
-npmDevDependencies in Compile += "style-loader" -> "0.23.1"
-npmDevDependencies in Compile += "css-loader" -> "2.1.1"
-npmDevDependencies in Compile += "html-webpack-plugin" -> "3.2.0"
-npmDevDependencies in Compile += "copy-webpack-plugin" -> "5.0.2"
-npmDevDependencies in Compile += "webpack-merge" -> "4.2.1"
+npmDevDependencies in Compile += "file-loader"            -> "3.0.1"
+npmDevDependencies in Compile += "style-loader"           -> "0.23.1"
+npmDevDependencies in Compile += "css-loader"             -> "2.1.1"
+npmDevDependencies in Compile += "less-loader"            -> "5.0.0"
+npmDevDependencies in Compile += "less"                   -> "3.10.3"
+npmDevDependencies in Compile += "html-webpack-plugin"    -> "3.2.0"
+npmDevDependencies in Compile += "copy-webpack-plugin"    -> "5.0.2"
+npmDevDependencies in Compile += "webpack-merge"          -> "4.2.1"
 
 resolvers += Resolver.bintrayRepo("oyvindberg", "ScalablyTyped")
 
@@ -33,7 +37,7 @@ scalacOptions += "-P:scalajs:sjsDefinedByDefault"
 addCompilerPlugin("org.scalamacros" % "paradise" % "2.1.1" cross CrossVersion.full)
 
 version in webpack := "4.29.6"
-version in startWebpackDevServer:= "3.2.1"
+version in startWebpackDevServer := "3.2.1"
 
 webpackResources := baseDirectory.value / "webpack" * "*"
 

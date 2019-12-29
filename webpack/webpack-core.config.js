@@ -1,6 +1,7 @@
 var path = require("path");
 var CopyWebpackPlugin = require('copy-webpack-plugin');
 var HtmlWebpackPlugin = require('html-webpack-plugin');
+var darkTheme = require('@ant-design/dark-theme').default;
 
 module.exports = {
   mode: "development",
@@ -14,6 +15,22 @@ module.exports = {
   },
   module: {
     rules: [
+      {
+        test: /\.(less)$/,
+        use: [{
+          loader: 'style-loader' // creates style nodes from JS strings
+        }, {
+          loader: 'css-loader' // translates CSS into CommonJS
+        }, {
+          loader: 'less-loader', // compiles Less to CSS
+          options: {
+            modifyVars: {
+              ...darkTheme,
+            },
+            javascriptEnabled: true
+          }
+        }]
+      },
       {
         test: /\.css$/,
         use: [ 'style-loader', 'css-loader' ]
@@ -30,7 +47,8 @@ module.exports = {
           }
         ]
       }
-    ]
+    ],
+
   },
   plugins: [
     new CopyWebpackPlugin([

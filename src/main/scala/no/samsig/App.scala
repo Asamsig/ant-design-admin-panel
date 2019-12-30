@@ -6,12 +6,14 @@ import slinky.core.annotations.react
 import slinky.core.facade.Hooks._
 import slinky.web.html._
 import typings.antd.AntdFacade.{List => _, _}
-import AntdProFacade._
+import AntdProLayoutFacade._
+import org.scalablytyped.runtime.StringDictionary
 import typings.react.ScalableSlinky._
 import typings.react.reactMod.{FormEvent, MouseEvent}
 import typings.antd.libNotificationMod.{default => Notification}
 import typings.atAntDashDesignProDashLayout.atAntDashDesignProDashLayoutStrings
 import typings.atAntDashDesignProDashLayout.libDefaultSettingsMod.ContentWidth
+import typings.atAntDashDesignProDashLayout.libTypingsMod.MenuDataItem
 
 import scala.scalajs.js
 import scala.scalajs.js.annotation.JSImport
@@ -49,25 +51,54 @@ object ReactLogo extends js.Object
       Col(ColProps(span = 7))
     )
 
-    scala.scalajs.js.timers.setTimeout(3000) { // note the absence of () =>
-      // work
-      console.log("LOADED")
-      updateIsLoading(false)
-    }
+//    scala.scalajs.js.timers.setTimeout(3000) { // note the absence of () =>
+//      // work
+//      console.log("LOADED")
+//      updateIsLoading(false)
+//    }
 
+//    BasicLayout(
+//      BasicLayoutProps(
     ProLayout(
       ProDashLayoutProps(
         logo = img(src := ReactLogo.asInstanceOf[String], className := "App-logo", alt := "logo").toST,
         title = "Samsig",
-        loading = isLoading,
-        contentWidth = ContentWidth.Fluid,
-        menuProps = MenuProps(
-          defaultOpenKeys = js.Array("Bennie", "Loves", "Booboo"),
-          openKeys = js.Array("Bennie", "Loves", "Booboo")
-        )
+//        loading = isLoading,
+//        contentWidth = ContentWidth.Fixed,
+        menuDataRender = { _ =>
+          js.Array(
+            MenuDataItem(
+              key = "1",
+              name = "Home",
+              path = "/",
+              icon = "home",
+            ),
+            MenuDataItem(
+              key = "2",
+              name = "Payment",
+              path = "/payment",
+              icon = "credit-card"
+            ),
+            MenuDataItem(
+              key = "3",
+              name = "Settings",
+              path = "/settings",
+              icon = "tool"
+            )
+          )
+        }
       )
     )(
-      renderIntro
+      PageHeaderWrapper(PageHeaderWrapperProps())(
+//        Spin(
+//          SpinProps(
+//            size = antdStrings.large,
+//            spinning = isLoading
+//          )
+//        )(
+          renderIntro
+//        )
+      )
     )
   }
 }

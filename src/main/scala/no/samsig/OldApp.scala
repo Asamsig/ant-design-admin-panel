@@ -1,13 +1,13 @@
 package no.samsig
 
 import org.scalajs.dom.console
-
 import slinky.core._
 import slinky.core.annotations.react
 import slinky.core.facade.Hooks._
 import slinky.web.html._
 import typings.antd.AntdFacade.{List => _, _}
-import AntdProFacade._
+import AntdProLayoutFacade._
+import typings.antd.libIconMod.ThemeType
 import typings.react.ScalableSlinky._
 import typings.react.reactMod.{FormEvent, MouseEvent}
 import typings.antd.libNotificationMod.{default => Notification}
@@ -184,7 +184,7 @@ import scala.scalajs.js.annotation.JSImport
           Input(
             InputProps(
               placeholder = "input email",
-              addonBefore = Icon(IconProps(`type` = "mail", theme = antdStrings.twoTone)).toST,
+              addonBefore = Icon(IconProps(`type` = "mail", theme = ThemeType.twoTone)).toST,
             )
           )
         ),
@@ -192,7 +192,7 @@ import scala.scalajs.js.annotation.JSImport
           Password(
             PasswordProps(
               placeholder = "input password",
-              addonBefore = Icon(IconProps(`type` = "lock", theme = antdStrings.twoTone)).toST,
+              addonBefore = Icon(IconProps(`type` = "lock", theme = ThemeType.twoTone)).toST,
             )
           )
         ),

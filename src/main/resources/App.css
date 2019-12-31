@@ -6,10 +6,16 @@
     animation: App-logo-spin infinite 20s linear;
 }
 
+.Scala-logo {
+    position: absolute;
+    top: 65px;
+    left: 0;
+    right: 0;
+    margin: auto;
+    height: 33px;
+}
+
 .App-header {
-    height: 150px;
-    padding: 20px;
-    color: white;
     text-align: center;
 }
 
@@ -22,7 +28,15 @@
     text-align: center;
 }
 
+.spanner {
+    margin-right: 30px;
+}
+
 @keyframes App-logo-spin {
-    from { transform: rotate(0deg); }
-    to { transform: rotate(360deg); }
+    from {
+        transform: rotate(0deg);
+    }
+    to {
+        transform: rotate(360deg);
+    }
 }

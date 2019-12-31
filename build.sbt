@@ -11,7 +11,6 @@ npmDependencies in Compile += "react-router-dom"       -> "5.1.2"
 npmDependencies in Compile += "antd"                   -> "3.26.4"
 npmDependencies in Compile += "ant-design-pro"         -> "2.3.2"
 npmDependencies in Compile += "@ant-design/pro-layout" -> "4.10.2"
-npmDependencies in Compile += "@ant-design/dark-theme" -> "1.0.3"
 
 npmDevDependencies in Compile += "file-loader"         -> "3.0.1"
 npmDevDependencies in Compile += "style-loader"        -> "0.23.1"
@@ -21,6 +20,7 @@ npmDevDependencies in Compile += "less"                -> "3.10.3"
 npmDevDependencies in Compile += "html-webpack-plugin" -> "3.2.0"
 npmDevDependencies in Compile += "copy-webpack-plugin" -> "5.0.2"
 npmDevDependencies in Compile += "webpack-merge"       -> "4.2.1"
+npmDevDependencies in Compile += "@ant-design/dark-theme" -> "1.0.3"
 
 resolvers += Resolver.bintrayRepo("oyvindberg", "ScalablyTyped")
 

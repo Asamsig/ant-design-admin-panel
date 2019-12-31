@@ -20,8 +20,12 @@ object AntdProLayoutFacade extends atAntDashDesignProDashLayoutProps {
 
   @inline def ProLayout: ExternalComponentP[ProDashLayoutProps] = importSTComponent(AntdProLayout.ProDashLayout)
 
+  @inline def DefaultHeader: ExternalComponentP[DefaultHeaderProps] = importSTComponent(AntdProLayout.DefaultHeader)
+
   @inline def BasicLayout: ExternalComponentP[BasicLayoutProps] = importSTComponent(AntdProLayout.BasicLayout)
 
   @inline def PageHeaderWrapper: ExternalComponentP[PageHeaderWrapperProps] = importSTComponent(AntdProLayout.PageHeaderWrapper)
+
+  @inline def PageLoading: ExternalComponentP[PageLoadingProps] = importSTComponent(AntdProLayout.PageLoading)
 
 }

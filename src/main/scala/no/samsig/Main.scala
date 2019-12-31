@@ -3,12 +3,11 @@ package no.samsig
 import scala.scalajs.js
 import scala.scalajs.js.annotation.{JSExportTopLevel, JSImport}
 import scala.scalajs.LinkingInfo
-
 import slinky.core._
 import slinky.web.ReactDOM
 import slinky.hot
-
 import org.scalajs.dom
+import typings.reactDashRouterDashDom.ReactRouterFacade.{BrowserRouter, BrowserRouterProps}
 
 @JSImport("resources/index.css", JSImport.Default)
 @js.native
@@ -30,6 +29,6 @@ object Main {
       elem
     }
 
-    ReactDOM.render(App(), container)
+    ReactDOM.render(BrowserRouter(BrowserRouterProps())(App()), container)
   }
 }

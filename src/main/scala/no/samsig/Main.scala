@@ -1,5 +1,7 @@
 package no.samsig
 
+import no.samsig.App.renderIntro
+
 import scala.scalajs.js
 import scala.scalajs.js.annotation.{JSExportTopLevel, JSImport}
 import scala.scalajs.LinkingInfo
@@ -7,14 +9,31 @@ import slinky.core._
 import slinky.web.ReactDOM
 import slinky.hot
 import org.scalajs.dom
-import typings.reactDashRouterDashDom.ReactRouterFacade.{BrowserRouter, BrowserRouterProps}
+import slinky.web.html._
+import typings.reactDashRouterDashDom.ReactRouterFacade._
+import typings.antDashDesignDashPro.antDashDesignDashProStrings
+import typings.react.ScalableSlinky._
+import no.samsig.authorization.{AuthProvider, Authorized, AuthorizedRoute}
+import org.scalajs.dom.console
+import slinky.core.facade.React
 
-@JSImport("resources/index.css", JSImport.Default)
+@JSImport("ant-design-pro/dist/ant-design-pro.css", JSImport.Default)
 @js.native
-object IndexCSS extends js.Object
+object AntDesignProCSS extends js.Object
+
+@JSImport("antd/dist/antd.less", JSImport.Default)
+@js.native
+object AntDesignCSS extends js.Object
+
+@JSImport("resources/App.css", JSImport.Default)
+@js.native
+object AppCSS extends js.Object
 
 object Main {
-  val css = IndexCSS
+
+  private val antDesignProCSS = AntDesignProCSS
+  private val antDesignCSS = AntDesignCSS
+  private val appCss = AppCSS
 
   @JSExportTopLevel("main")
   def main(): Unit = {
@@ -29,6 +48,16 @@ object Main {
       elem
     }
 
-    ReactDOM.render(BrowserRouter(BrowserRouterProps())(App()), container)
+    ReactDOM.render(
+      AuthProvider(
+        BrowserRouter(BrowserRouterProps())(
+          Switch(SwitchProps())(
+            Route[Unit](path = "/login", render = props => Login()),
+            AuthorizedRoute("user", () => App(), RedirectProps(to = "/login"))
+          )
+        )
+      ),
+      container
+    )
   }
 }

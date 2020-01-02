@@ -5,44 +5,32 @@ import slinky.core._
 import slinky.core.annotations.react
 import slinky.core.facade.Hooks._
 import slinky.web.html.{p, key => htmlKey, _}
-import typings.antd.AntdFacade.{List => _, _}
+import typings.antd.AntdFacade.{List => AntdList, Option => AntdOption, Switch => AntdSwitch, SwitchProps => AntdSwitchProps, _}
 import AntdProLayoutFacade._
 import AntDesignProFacade._
 import no.samsig.App.Props
+import Assets._
 import org.scalablytyped.runtime.StringDictionary
+import typings.antDashDesignDashPro.antDashDesignDashProStrings
 import typings.react.ScalableSlinky._
-import typings.reactDashRouterDashDom.ReactRouterFacade.{Route, _}
-import typings.reactDashRouter.reactDashRouterMod.{RouteComponentProps, _}
+import typings.reactDashRouterDashDom.ReactRouterFacade.{Route, Switch, _}
 import typings.react.reactMod.{CSSProperties, FormEvent, MouseEvent, ReactElement, ReactNode}
 import typings.antd.libNotificationMod.{default => Notification}
 import typings.atAntDashDesignProDashLayout.{MenuDataItemisUrlboolean, atAntDashDesignProDashLayoutStrings}
 import typings.atAntDashDesignProDashLayout.libDefaultSettingsMod.ContentWidth
 import typings.atAntDashDesignProDashLayout.libTypingsMod.MenuDataItem
 import typings.history.historyMod.LocationState
+import typings.reactDashRouterDashDom.reactDashRouterDashDomMod.useLocation
 
 import scala.scalajs.js
 import scala.scalajs.js.annotation.JSImport
-
-@JSImport("resources/App.css", JSImport.Default)
-@js.native
-object AppCSS extends js.Object
-
-@JSImport("resources/logo.svg", JSImport.Default)
-@js.native
-object ReactLogo extends js.Object
-
-@JSImport("resources/scala-js-logo.svg", JSImport.Default)
-@js.native
-object ScalaJsLogo extends js.Object
 
 @react object App {
 
   type Props = Unit
 
-  private val appCss = AppCSS
-
   val component = FunctionalComponent[Props] { _ =>
-    val (isLoading, updateIsLoading) = useState(true)
+//    val (isLoading, updateIsLoading) = useState(true)
     val location                     = useLocation[String]()
 
 //    scala.scalajs.js.timers.setTimeout(3000) { // note the absence of () =>
@@ -51,8 +39,6 @@ object ScalaJsLogo extends js.Object
 //      updateIsLoading(false)
 //    }
 
-//    BasicLayout(
-//      BasicLayoutProps(
     ProLayout(
       ProDashLayoutProps(
         logo = img(src := ReactLogo.asInstanceOf[String], className := "App-logo", alt := "logo").toST,
@@ -68,19 +54,16 @@ object ScalaJsLogo extends js.Object
         menuDataRender = { _ =>
           js.Array(
             MenuDataItem(
-              key = "1",
               name = "Home",
-              path = "/",
+              path = "/home",
               icon = "home",
             ),
             MenuDataItem(
-              key = "2",
               name = "Payment",
               path = "/payment",
               icon = "credit-card"
             ),
             MenuDataItem(
-              key = "3",
               name = "Settings",
               path = "/settings",
               icon = "tool"
@@ -89,7 +72,11 @@ object ScalaJsLogo extends js.Object
         }
       )
     )(
-      PageHeaderWrapper(PageHeaderWrapperProps(title = location.pathname.drop(1).capitalize))(
+      PageHeaderWrapper(
+        PageHeaderWrapperProps(
+          title = location.pathname.drop(1).capitalize
+        )
+      )(
 //        PageLoading(PageLoadingProps(tip = "Loading content"))(
 //        Spin(
 //          SpinProps(
@@ -97,30 +84,41 @@ object ScalaJsLogo extends js.Object
 //            spinning = isLoading
 //          )
 //        )(
-        Route[Unit](exact = true, path = "/", render = props => renderIntro(props)),
-        Route[Unit](path = "/payment", render = props => h2("PAYMENT!!!")),
-        Route[Unit](path = "/settings", render = props => h3("SETTINGS")),
-//        )
+        Switch(SwitchProps())(
+          Route[Unit](path = "/home", render = props => renderIntro),
+          Route[Unit](path = "/payment", render = props => h2("PAYMENT!!!")),
+          Route[Unit](path = "/settings", render = props => h3("SETTINGS")),
+          Route[Unit](
+            render = props =>
+              Exception(
+                ExceptionProps(
+                  redirect = "/home",
+                  title = "404",
+                  img = NotFoundImage.asInstanceOf[String],
+                  desc = "Sorry, the page you visited does not exist.",
+                  `type` = antDashDesignDashProStrings.`404`,
+                )
+            )
+          )
+        )
       )
     )
   }
 
-  private def renderIntro(props: RouteComponentProps[Props, StaticContext, LocationState]) = {
-    PageHeaderWrapper(PageHeaderWrapperProps(title = props.`match`.path.drop(1).capitalize))(
-      Row(RowProps())(
-        Col(ColProps(span = 24))(
-          header(className := "App-header")(
-            img(src := ReactLogo.asInstanceOf[String], height := "160px", className := "App-logo", alt := "logo"),
-            img(src := ScalaJsLogo.asInstanceOf[String], className := "Scala-logo", alt := "logo"),
-            h1(className := "App-title")("Welcome to React (with Scala.js!)"),
-            p(className := "App-intro")(
-              "To get started, edit ",
-              code("App.scala"),
-              " and save to reload."
-            )
+  private def renderIntro = {
+    Row(RowProps())(
+      Col(ColProps(span = 24))(
+        header(className := "App-header")(
+          img(src := ReactLogo.asInstanceOf[String], height := "160px", className := "App-logo", alt := "logo"),
+          img(src := ScalaJsLogo.asInstanceOf[String], className := "Scala-logo", alt := "logo"),
+          h1(className := "App-title")("Welcome to React (with Scala.js!)"),
+          p(className := "App-intro")(
+            "To get started, edit ",
+            code("App.scala"),
+            " and save to reload."
           )
-        ),
-      )
+        )
+      ),
     )
   }
 
@@ -129,20 +127,14 @@ object ScalaJsLogo extends js.Object
       Link[String](LinkProps[String](to = menuDataItem.path.getOrElse(null)))(defaultDom.fromST).toST
   }
 
-  private def renderRightContent: js.Function1[AntdProLayoutFacade.BasicLayoutProps, ReactNode] = {
-    basicLayoutProps: BasicLayoutProps =>
-      div(
-//        <span style={{ marginRight: 24 }}>
-//<Badge count={1}>
-//<Avatar shape="square" icon="user" />
-//</Badge>
-//</span>
-        span(className := "spanner")(
-          Badge(BadgeProps(overflowCount = 1))(
-            Avatar(AvatarProps(icon = "user")),
-          )
+  private def renderRightContent: js.Function1[AntdProLayoutFacade.BasicLayoutProps, ReactNode] = { basicLayoutProps: BasicLayoutProps =>
+    div(
+      span(className := "spanner")(
+        Badge(BadgeProps(overflowCount = 1))(
+          Avatar(AvatarProps(icon = "user")),
         )
+      )
 //        , NoticeIcon(NoticeIconProps())
-      ).toST
+    ).toST
   }
 }

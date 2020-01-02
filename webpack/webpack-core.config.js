@@ -68,5 +68,8 @@ module.exports = {
         return "webpack://" + f.namespace + "/" + f.resourcePath;
       }
     }
+  },
+  devServer: {
+    historyApiFallback: true
   }
 }

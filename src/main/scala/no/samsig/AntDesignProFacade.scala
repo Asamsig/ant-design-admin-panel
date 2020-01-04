@@ -16,6 +16,7 @@ object AntDesignProFacade extends antDashDesignDashProProps {
   @inline def LoginSubmit: ExternalComponentP[LoginPasswordProps]      = importSTComponent(AntDesignPro.LoginPassword)
   @inline def LoginTab: ExternalComponentP[LoginTabProps]              = importSTComponent(AntDesignPro.LoginTab)
   @inline def LoginItem: ExternalComponentP[LoginItemProps]            = importSTComponent(AntDesignPro.LoginItem)
+  @inline def MiniArea: ExternalComponentP[MiniAreaProps]              = importSTComponent(AntDesignPro.MiniArea)
 //  @inline def AuthorizedRoute: ExternalComponentP[AuthorizedRouteProps] = importSTComponent(AntDesignPro.AuthorizedRoute)
 
 }

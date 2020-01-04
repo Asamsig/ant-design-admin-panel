@@ -46,6 +46,17 @@ module.exports = {
             }
           }
         ]
+      },
+      {
+        test: /\.png$/,
+        use: [
+          {
+            loader: 'file-loader',
+            query: {
+              name: 'static/media/[name].[hash:8].[ext]'
+            }
+          }
+        ]
       }
     ],
 

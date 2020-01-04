@@ -13,7 +13,7 @@ import slinky.web.html._
 import typings.reactDashRouterDashDom.ReactRouterFacade._
 import typings.antDashDesignDashPro.antDashDesignDashProStrings
 import typings.react.ScalableSlinky._
-import no.samsig.authorization.{AuthProvider, Authorized, AuthorizedRoute}
+import no.samsig.authorization.{AuthProvider, Contexts, AuthorizedRoute}
 import org.scalajs.dom.console
 import slinky.core.facade.React
 
@@ -32,8 +32,8 @@ object AppCSS extends js.Object
 object Main {
 
   private val antDesignProCSS = AntDesignProCSS
-  private val antDesignCSS = AntDesignCSS
-  private val appCss = AppCSS
+  private val antDesignCSS    = AntDesignCSS
+  private val appCss          = AppCSS
 
   @JSExportTopLevel("main")
   def main(): Unit = {
@@ -50,11 +50,11 @@ object Main {
 
     ReactDOM.render(
       AuthProvider(
-        BrowserRouter(BrowserRouterProps())(
-          Switch(SwitchProps())(
-            Route[Unit](path = "/login", render = props => Login()),
-            AuthorizedRoute("user", () => App(), RedirectProps(to = "/login"))
-          )
+          BrowserRouter(BrowserRouterProps())(
+            Switch(SwitchProps())(
+              Route[Unit](path = "/login", render = props => Login()),
+              AuthorizedRoute("user", () => App(), RedirectProps(to = "/login"))
+            )
         )
       ),
       container

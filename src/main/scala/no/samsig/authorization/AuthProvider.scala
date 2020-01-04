@@ -1,71 +1,88 @@
 package no.samsig.authorization
 
+import no.samsig.AntDesignProFacade.{Exception, ExceptionProps}
+import no.samsig.AntdProLayoutFacade._
+import no.samsig.Assets.ServerErrorImage
 import no.samsig.model.User
-import org.scalajs.dom.console
 import slinky.core._
 import slinky.core.annotations.react
 import slinky.core.facade.Hooks._
-import slinky.web.html.{p, key => htmlKey, _}
-import typings.antd.AntdFacade.{List => AntdList, Option => AntdOption, Switch => AntdSwitch, SwitchProps => AntdSwitchProps, _}
-import no.samsig.{AntDesignProFacade, AntdProLayoutFacade, Assets}
-import org.scalablytyped.runtime.StringDictionary
-import slinky.core.facade.{React, ReactElement}
+import slinky.core.facade.ReactElement
 import typings.antDashDesignDashPro.antDashDesignDashProStrings
-import typings.antDashDesignDashPro.libAuthorizedAuthorizedRouteMod.authority
-import typings.history.historyMod.{Location, LocationState}
-import typings.react.ScalableSlinky._
-import typings.reactDashRouterDashDom.ReactRouterFacade.{Route, Switch, _}
-import typings.react.reactMod.{CSSProperties, ComponentType, FormEvent, MouseEvent, ReactNode}
-import typings.reactDashRouter.reactDashRouterMod.{RouteChildrenProps, RouteComponentProps, StaticContext}
-import typings.reactDashRouterDashDom.reactDashRouterDashDomMod.useLocation
-import AntdProLayoutFacade._
-import no.samsig.AntDesignProFacade.{Exception, ExceptionProps}
-import no.samsig.Assets.{NotFoundImage, ServerErrorImage}
+import org.scalajs.dom.console
+import typings.react.reactMod.ReactText
+import typings.std.Date
 
 import scala.concurrent.{Future, Promise}
-import scala.scalajs.js
-import scala.scalajs.js.annotation.JSImport
-import scala.scalajs.js.|
 import scala.scalajs.concurrent.JSExecutionContext.Implicits.queue
+import scala.scalajs.js
+import scala.scalajs.js.timers.SetTimeoutHandle
 
 @react object AuthProvider {
   type Props = ReactElement
+//  type Props = Unit
 
-  case class State(status: String, error: Option[String], user: Option[User])
+  case class State(
+      status: ProgressStates,
+      error: Option[String],
+      user: Option[User]
+  )
+
+  sealed trait ProgressStates
+  case object Pending extends ProgressStates
+  case object Error   extends ProgressStates
+  case object Success extends ProgressStates
 
   val component = FunctionalComponent[Props] { children =>
-    val (state, setState) = useState(State("pending", None, None))
-    useEffect(
-      () =>
-        delay(User("Asamsig", "user"), 150).map(user => {
-          setState(_.copy("success", user = Some(user)))
-//          setState(_.copy("error", error = Some("Sorry, the server is reporting an error.")))
-        })
-    )
-    Authorized.Context.Provider(value = state.user)(
+    val (state, setState) = useState(State(Success, None, Some(User("Asamsig", "user"))))
+//    useEffect(
+//      () => {
+//        val (handle, futureValue) = delay(User("Asamsig" + Date.now(), "user"), 10000)
+//        futureValue.map(user => {
+//          console.log(user.toString)
+//          setState(_.copy(user = Some(user)))
+////          setState(_.copy("error", error = Some("Sorry, the server is reporting an error.")))
+//        })
+//        () =>
+//          js.timers.clearTimeout(handle)
+//      }
+//    )
+//    console.log(children)
+    console.log(state.toString)
+    Contexts.UserContext.Provider(value = state.user)(
       state match {
-        case State("pending", _, _) => PageLoading(PageLoadingProps(tip = "Loading content"))
-        case State("error", Some(error), _) =>
+        case State(Pending, _, _)       => PageLoading(PageLoadingProps(tip = "Loading content"))
+        case State(Success, _, Some(_)) => children
+        case State(Error, error, _) =>
           Exception(
             ExceptionProps(
               redirect = "/home",
               title = "500",
               img = ServerErrorImage.asInstanceOf[String],
-              desc = error,
+              desc = error.getOrElse("Sorry, an unexpected error occurred").asInstanceOf[ReactText],
               `type` = antDashDesignDashProStrings.`500`,
             )
           )
-        case State("success", _, Some(user)) => children
+        case State(progressState, error, _) =>
+          Exception(
+            ExceptionProps(
+              redirect = "/home",
+              title = "500",
+              img = ServerErrorImage.asInstanceOf[String],
+              desc = s"$progressState: " + error.getOrElse("Sorry, an unexpected error occurred").asInstanceOf[ReactText],
+              `type` = antDashDesignDashProStrings.`500`,
+            )
+          )
       }
     )
   }
 
-  def delay[T](content: T, milliseconds: Int): Future[T] = {
+  def delay[T](content: T, milliseconds: Int): (SetTimeoutHandle, Future[T]) = {
     val p = Promise[T]()
-    js.timers.setTimeout(milliseconds) {
+    val handle = js.timers.setTimeout(milliseconds) {
       p.success(content)
     }
-    p.future
+    handle -> p.future
   }
 
 }

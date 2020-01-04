@@ -32,7 +32,7 @@ import scala.scalajs.js.|
   )
 
   val component = FunctionalComponent[Props] { props =>
-    val auth = Authorized.useAuth
+    val auth = Contexts.useAuth
 
     if (auth.exists(_.authority.equalsIgnoreCase(props.authority))) {
       props.reactElement.apply()

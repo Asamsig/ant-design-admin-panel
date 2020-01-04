@@ -25,4 +25,8 @@ object Assets {
   @js.native
   object UnauthorizedImage extends js.Object
 
+  @JSImport("resources/sample-avatar.png", JSImport.Default)
+  @js.native
+  object SampleAvatar extends js.Object
+
 }

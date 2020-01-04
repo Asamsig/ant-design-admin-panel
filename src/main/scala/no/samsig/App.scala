@@ -1,5 +1,7 @@
 package no.samsig
 
+import java.util.Date
+
 import org.scalajs.dom.console
 import slinky.core._
 import slinky.core.annotations.react
@@ -8,10 +10,12 @@ import slinky.web.html.{p, key => htmlKey, _}
 import typings.antd.AntdFacade.{List => AntdList, Option => AntdOption, Switch => AntdSwitch, SwitchProps => AntdSwitchProps, _}
 import AntdProLayoutFacade._
 import AntDesignProFacade._
-import no.samsig.App.Props
+import AntDesignFacade._
 import Assets._
+import no.samsig.authorization.Contexts
+import no.samsig.model.User
 import org.scalablytyped.runtime.StringDictionary
-import typings.antDashDesignDashPro.antDashDesignDashProStrings
+import typings.antDashDesignDashPro.{Anon_XY, antDashDesignDashProStrings}
 import typings.react.ScalableSlinky._
 import typings.reactDashRouterDashDom.ReactRouterFacade.{Route, Switch, _}
 import typings.react.reactMod.{CSSProperties, FormEvent, MouseEvent, ReactElement, ReactNode}
@@ -19,11 +23,16 @@ import typings.antd.libNotificationMod.{default => Notification}
 import typings.atAntDashDesignProDashLayout.{MenuDataItemisUrlboolean, atAntDashDesignProDashLayoutStrings}
 import typings.atAntDashDesignProDashLayout.libDefaultSettingsMod.ContentWidth
 import typings.atAntDashDesignProDashLayout.libTypingsMod.MenuDataItem
+import typings.csstype.csstypeMod
+import typings.csstype.csstypeMod.StandardLonghandProperties
 import typings.history.historyMod.LocationState
 import typings.reactDashRouterDashDom.reactDashRouterDashDomMod.useLocation
 
 import scala.scalajs.js
+import scala.scalajs.js.JSConverters._
 import scala.scalajs.js.annotation.JSImport
+import scala.scalajs.js.|
+import scala.util.Random
 
 @react object App {
 
@@ -31,7 +40,8 @@ import scala.scalajs.js.annotation.JSImport
 
   val component = FunctionalComponent[Props] { _ =>
 //    val (isLoading, updateIsLoading) = useState(true)
-    val location                     = useLocation[String]()
+    val location = useLocation[String]()
+    val user     = Contexts.useAuth
 
 //    scala.scalajs.js.timers.setTimeout(3000) { // note the absence of () =>
 //      // work
@@ -49,7 +59,7 @@ import scala.scalajs.js.annotation.JSImport
         disableContentMargin = true,
 //        loading = isLoading,
 //        contentWidth = ContentWidth.Fixed,
-        rightContentRender = renderRightContent,
+        rightContentRender = renderRightContent(user),
         menuItemRender = renderMenuItem,
         menuDataRender = { _ =>
           js.Array(
@@ -86,7 +96,22 @@ import scala.scalajs.js.annotation.JSImport
 //        )(
         Switch(SwitchProps())(
           Route[Unit](path = "/home", render = props => renderIntro),
-          Route[Unit](path = "/payment", render = props => h2("PAYMENT!!!")),
+          Route[Unit](
+            path = "/payment",
+            render = props =>
+              Row(RowProps())(
+                Col(ColProps(span = 24))(
+                  MiniArea(
+                    MiniAreaProps(
+                      line = true,
+                      height = 70,
+                      color = "#cceafe",
+                      data = Seq.tabulate(20)(i => Anon_XY(new Date(2020, 1, i + 1).toString, Random.nextDouble())).toJSArray
+                    )
+                  )
+                )
+            )
+          ),
           Route[Unit](path = "/settings", render = props => h3("SETTINGS")),
           Route[Unit](
             render = props =>
@@ -127,12 +152,48 @@ import scala.scalajs.js.annotation.JSImport
       Link[String](LinkProps[String](to = menuDataItem.path.getOrElse(null)))(defaultDom.fromST).toST
   }
 
-  private def renderRightContent: js.Function1[AntdProLayoutFacade.BasicLayoutProps, ReactNode] = { basicLayoutProps: BasicLayoutProps =>
+  def userMenu(user: Option[User]) = {
+    Menu(MenuProps())(
+      MenuItemGroup(MenuItemGroupProps(title = s"Signed in as ${user.map(_.username.capitalize).mkString}"))(
+//        MenuDivider(MenuDividerProps()),
+        MenuItem(MenuItemProps())("Settings"),
+        MenuItem(MenuItemProps())(Link[String](LinkProps[String](to = "/login"))("Sign out")),
+      )
+    )
+  }
+
+  private def renderRightContent(user: Option[User]): js.Function1[AntdProLayoutFacade.BasicLayoutProps, ReactNode] = { basicLayoutProps: BasicLayoutProps =>
     div(
       span(className := "spanner")(
-        Badge(BadgeProps(overflowCount = 1))(
-          Avatar(AvatarProps(icon = "user")),
+        Dropdown(DropdownProps(overlay = userMenu(user).toST, trigger = js.Array(antdStrings.click)))(
+          Button(
+            ButtonProps(
+              size = antdStrings.large,
+              style = CSSProperties(
+                StandardLonghandProperties = StandardLonghandProperties(
+                  paddingLeft = 0,
+                  paddingRight = 0
+                )
+              )
+            )
+          )(
+            Badge(BadgeProps(count = 1, style = CSSProperties(
+              StandardLonghandProperties = StandardLonghandProperties(
+                color = "#fff",
+                backgroundColor = "#108ee9"
+              )
+            )))(
+              Avatar(
+                AvatarProps(
+                  size = antdStrings.large,
+                  shape = antdStrings.square,
+                  src = SampleAvatar.asInstanceOf[String],
+                )
+              ),
+            )
+          )
         )
+//            user.map(_.username.capitalize),
       )
 //        , NoticeIcon(NoticeIconProps())
     ).toST

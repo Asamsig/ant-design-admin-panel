@@ -66,7 +66,7 @@ import scala.scalajs.js.annotation.JSImport
                   LinkProps[String](to = "/register", style = floatRight)
                 )("Forgot password")
               ),
-              Link[String](LinkProps[String](to = "/home"))(Button(ButtonProps(`type` = antdStrings.primary))("Login")),
+              Link[String](LinkProps[String](to = "/home"))(Button(ButtonProps(block = true, `type` = antdStrings.primary))("Login")),
               div(
                 "Other login methods",
                 Link[String](LinkProps[String](to = "/facebook"))(Icon(IconProps(`type` = "facebook"))),
@@ -82,11 +82,6 @@ import scala.scalajs.js.annotation.JSImport
       )
     )
 
-  }
-
-  private def renderMenuItem: js.Function2[MenuDataItemisUrlboolean, ReactNode, ReactNode] = {
-    case (menuDataItem, defaultDom) =>
-      Link[String](LinkProps[String](to = menuDataItem.path.getOrElse(null)))(defaultDom.fromST).toST
   }
 
 }

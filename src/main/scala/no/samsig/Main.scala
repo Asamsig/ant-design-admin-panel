@@ -31,8 +31,8 @@ object AppCSS extends js.Object
 
 object Main {
 
-  private val antDesignProCSS = AntDesignProCSS
   private val antDesignCSS    = AntDesignCSS
+  private val antDesignProCSS = AntDesignProCSS
   private val appCss          = AppCSS
 
   @JSExportTopLevel("main")

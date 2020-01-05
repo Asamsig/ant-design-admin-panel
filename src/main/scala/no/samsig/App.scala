@@ -15,7 +15,7 @@ import Assets._
 import no.samsig.authorization.Contexts
 import no.samsig.model.User
 import org.scalablytyped.runtime.StringDictionary
-import typings.antDashDesignDashPro.{Anon_XY, antDashDesignDashProStrings}
+import typings.antDashDesignDashPro.{Anon_X, Anon_XY, antDashDesignDashProStrings}
 import typings.react.ScalableSlinky._
 import typings.reactDashRouterDashDom.ReactRouterFacade.{Route, Switch, _}
 import typings.react.reactMod.{CSSProperties, FormEvent, MouseEvent, ReactElement, ReactNode}
@@ -38,7 +38,33 @@ import scala.util.Random
 
   type Props = Unit
 
-  val component = FunctionalComponent[Props] { _ =>
+//  def trace(props: Any) = {
+//    val prevAsMap = props.asInstanceOf[Map[String, Any]]
+//    //    const prev = useRef(props);
+//    //    useEffect(() => {
+//    //      const changedProps = Object.entries(props).reduce((ps, [k, v]) => {
+//    //        if (prev.current[k] !== v) {
+//    //          ps[k] = [prev.current[k], v];
+//    //        }
+//    //        return ps;
+//    //      }, {});
+//    //      if (Object.keys(changedProps).length > 0) {
+//    //        console.log('Changed props:', changedProps);
+//    //      }
+//    //      prev.current = props;
+//    //    });
+//    val prev = useRef(prevAsMap)
+//    useEffect(() => {
+//      val changedProps = prevAsMap.toSeq.diff(prev.current.toSeq)
+//      if (changedProps.nonEmpty) {
+//        console.log("Changed props: ", changedProps)
+//      }
+//      prev.current = prevAsMap
+//    })
+//  }
+
+  val component = FunctionalComponent[Props] { props =>
+//    trace(props)
 //    val (isLoading, updateIsLoading) = useState(true)
     val location = useLocation[String]()
     val user     = Contexts.useAuth
@@ -98,21 +124,9 @@ import scala.util.Random
           Route[Unit](path = "/home", render = props => renderIntro),
           Route[Unit](
             path = "/payment",
-            render = props =>
-              Row(RowProps())(
-                Col(ColProps(span = 24))(
-                  MiniArea(
-                    MiniAreaProps(
-                      line = true,
-                      height = 70,
-                      color = "#cceafe",
-                      data = Seq.tabulate(20)(i => Anon_XY(new Date(2020, 1, i + 1).toString, Random.nextDouble())).toJSArray
-                    )
-                  )
-                )
-            )
+            render = props => renderPaymentDashboard
           ),
-          Route[Unit](path = "/settings", render = props => h3("SETTINGS")),
+          Route[Unit](path = "/settings", render = props => MyTable()),
           Route[Unit](
             render = props =>
               Exception(
@@ -127,6 +141,41 @@ import scala.util.Random
           )
         )
       )
+    )
+  }
+
+  private val xs = Seq.tabulate(6)(i => Anon_X((i + 1).toString, Random.nextDouble()))
+  private val ys = Seq.tabulate(20)(i => Anon_XY(new Date(2020, 1, i + 1).toString, Random.nextDouble().formatted("%.2f").toDouble))
+
+  private def renderPaymentDashboard = {
+    Row(RowProps())(
+      Col(ColProps(span = 8))(
+        ChartCard(ChartCardProps(title = "My title", total = 8846, contentHeight = 134))(
+          NumberInfo(NumberInfoProps(subTitle = span("My subtitle").toST, total = 12321, status = antDashDesignDashProStrings.up, subTotal = 17.1)),
+          MiniArea(
+            MiniAreaProps(
+              line = true,
+              height = 45,
+              color = "#cceafe",
+              data = ys.toJSArray
+            )
+          )
+        )
+      ),
+//      Col(ColProps(span = 12))(
+//        ChartCard(ChartCardProps(contentHeight = 300))(
+//          Pie(
+//            PieProps(
+//              title = "Pie Title",
+//              subTitle = "Pie SubTitle",
+//              hasLegend = true,
+//              height = 294,
+//              total = xs.map(_.y).sum,
+//              data = xs.toJSArray
+//            )
+//          )
+//        )
+//      ),
     )
   }
 
@@ -169,20 +218,20 @@ import scala.util.Random
           Button(
             ButtonProps(
               size = antdStrings.large,
-              style = CSSProperties(
-                StandardLonghandProperties = StandardLonghandProperties(
-                  paddingLeft = 0,
-                  paddingRight = 0
-                )
-              )
+              className = "user-icon"
             )
           )(
-            Badge(BadgeProps(count = 1, style = CSSProperties(
-              StandardLonghandProperties = StandardLonghandProperties(
-                color = "#fff",
-                backgroundColor = "#108ee9"
+            Badge(
+              BadgeProps(
+                count = 1,
+                style = CSSProperties(
+                  StandardLonghandProperties = StandardLonghandProperties(
+                    color = "#fff",
+                    backgroundColor = "#108ee9"
+                  )
+                )
               )
-            )))(
+            )(
               Avatar(
                 AvatarProps(
                   size = antdStrings.large,

@@ -1,121 +1,73 @@
 package no.samsig
 
-import no.samsig.AntDesignProFacade.{Login => AntdLogin, _}
-import no.samsig.Assets.{ReactLogo, ScalaJsLogo}
-import org.scalajs.dom.console
+import org.scalablytyped.runtime.StringDictionary
 import org.scalajs.dom.ext.Ajax
 import slinky.core._
 import slinky.core.annotations.react
-import slinky.core.facade.Hooks._
-import slinky.core.facade.SetStateHookCallback
-import slinky.web.html._
 import typings.antd.AntdFacade._
 import typings.antd.libPaginationPaginationMod.PaginationConfig
 import typings.antd.libTableInterfaceMod.{ColumnFilterItem, SorterResult, TableCurrentDataSource}
-import typings.atAntDashDesignProDashLayout.MenuDataItemisUrlboolean
-import typings.csstype.csstypeMod.{FloatProperty, StandardLonghandProperties}
-import typings.react.ScalableSlinky._
-import typings.react.reactMod.{CSSProperties, ReactNode}
-import typings.reactDashRouterDashDom.ReactRouterFacade._
 import typings.std
-import typings.std.fetch
 
-import scala.collection.mutable
 import scala.scalajs.concurrent.JSExecutionContext.Implicits.queue
 import scala.scalajs.js
-import scala.scalajs.js.{JSON, |}
+import scala.scalajs.js.JSON
 import scala.util.Random
 
-class TableItem(val name: String, val gender: String, val email: String) extends js.Object
+class TableItem(val name: String, val gender: String, val email: String, val nationality: String) extends js.Object
 @react class MyTable extends Component {
 
   type Props = Unit
 
-  case class State(data: js.Array[TableItem], isLoading: Boolean, pagination: mutable.Map[String, Object])
+  case class State(data: js.Array[TableItem] = js.Array(), isLoading: Boolean = true, pagination: js.Dynamic = js.Dynamic.literal(total = 200))
 
-  def initialState = State(js.Array(), true, mutable.Map.empty[String, Object])
+  def initialState = State()
 
-//  handleTableChange = (pagination, filters, sorter) => {
-//    const pager = { ...this.state.pagination };
-//    pager.current = pagination.current;
-//    this.setState({
-//      pagination: pager,
-//    });
-//    this.fetch({
-//      results: pagination.pageSize,
-//      page: pagination.current,
-//      sortField: sorter.field,
-//      sortOrder: sorter.order,
-//      ...filters,
-//    });
-//  };
-//
-
-  def fetchData(queryParams: mutable.Map[String, Object]) = {
-    //  fetch = (params = {}) => {
-    //    console.log('params:', params);
-    //    this.setState({ loading: true });
-    //    reqwest({
-    //      url: 'https://randomuser.me/api',
-    //      method: 'get',
-    //      data: {
-    //        results: 10,
-    //        ...params,
-    //      },
-    //      type: 'json',
-    //    }).then(data => {
-    //      const pagination = { ...this.state.pagination };
-    //      // Read total count from server
-    //      // pagination.total = data.totalCount;
-    //      pagination.total = 200;
-    //      this.setState({
-    //        loading: false,
-    //        data: data.results,
-    //        pagination,
-    //      });
-    //    });
-    //  };
-    Ajax.get(s"https://randomuser.me/api?seed=samsig&nat=no,dk" + queryParams.map { case (key, value) => s"$key=$value" }.mkString("&", "&", "")).map {
-      case data =>
-        val pagination = state.pagination
-        pagination.put("total", 200)
-        val data1 = JSON.parse(data.responseText).results.asInstanceOf[js.Array[js.Dynamic]]
-        setState(State(data1.map(obj => new TableItem(s"${obj.name.first} ${obj.name.last}", obj.gender.toString, obj.email.toString)), false, pagination))
+  def fetchData(queryParams: Map[String, Any]) = {
+    setState(_.copy(isLoading = true))
+    Ajax.get("https://randomuser.me/api?seed=samsig&nat=no,dk" + queryParams.map { case (key, value) => s"$key=$value" }.mkString("&", "&", "")).map { data =>
+      val results = JSON.parse(data.responseText).results.asInstanceOf[js.Array[js.Dynamic]]
+      setState(
+        _.copy(
+          results.map(obj => new TableItem(s"${obj.name.first} ${obj.name.last}", obj.gender.toString, obj.email.toString, obj.nat.toString)),
+          isLoading = false
+        )
+      )
     }
   }
+
   def handleTableChange(pagination: PaginationConfig,
-                        filters: std.Partial[std.Record[String, Array[String]]],
+                        filters: std.Partial[std.Record[String, js.Array[String]]],
                         sorter: SorterResult[TableItem],
                         extra: TableCurrentDataSource[TableItem]) = {
-//    handleTableChange = (pagination, filters, sorter) => {
-//      const pager = { ...this.state.pagination };
-//      pager.current = pagination.current;
-//      this.setState({
-//        pagination: pager,
-//      });
-//      this.fetch({
-//        results: pagination.pageSize,
-//        page: pagination.current,
-//        sortField: sorter.field,
-//        sortOrder: sorter.order,
-//        ...filters,
-//      });
-//    };
     val pager = state.pagination
-    pager.put("current", pagination.current)
+    pager.current = pagination.current
     setState(_.copy(pagination = pager))
+    val nationalityFilter     = filters.asInstanceOf[StringDictionary[js.Array[String]]].get("nationality")
+    val filterByNationalities = nationalityFilter.filterNot(_.isEmpty).getOrElse(js.Array("dk", "no"))
+    val nationalities         = defaultNationalities.filter(filterByNationalities.contains)
+
+    import scala.scalajs.js.UndefOr.any2undefOrA
+    val sortByField = any2undefOrA(sorter.asInstanceOf[js.Dynamic].field).toOption
+    val sortOrder   = any2undefOrA(sorter.asInstanceOf[js.Dynamic].order).toOption
     fetchData(
-      mutable.Map(
-        "results"   -> pagination.pageSize,
-        "page"      -> pagination.current,
-        "sortField" -> sorter.field,
-        "sortOrder" -> sorter.order,
+      Map(
+        "results" -> pagination.pageSize,
+        "page"    -> pagination.current,
       )
+        ++ Map("nat" -> nationalities.mkString(","))
+        ++ sortByField
+          .map(field => Map("sortField" -> field.toString))
+          .getOrElse(Map.empty)
+        ++ sortOrder
+          .map(order => Map("sortOrder" -> order.toString))
+          .getOrElse(Map.empty)
     )
   }
+  private val defaultNationalities = js.Array("dk", "no")
 
   override def componentDidMount(): Unit = {
-    fetchData(mutable.Map("results" -> 10, "page" -> 1))
+    fetchData(Map("nat" -> defaultNationalities.mkString(","), "results" -> 10, "page" -> 1))
   }
 
   def render() = {
@@ -145,15 +97,19 @@ class TableItem(val name: String, val gender: String, val email: String) extends
     ColumnProps[TableItem](
       title = "Gender",
       dataIndex = "gender",
-      filters = js.Array(
-        ColumnFilterItem(value = "male", text = "Male"),
-        ColumnFilterItem(value = "female", text = "Female"),
-      ),
       width = "20%"
     ),
     ColumnProps[TableItem](
       title = "Email",
       dataIndex = "email",
+    ),
+    ColumnProps[TableItem](
+      title = "Nationality",
+      dataIndex = "nationality",
+      filters = js.Array(
+        ColumnFilterItem(value = "dk", text = "Danish"),
+        ColumnFilterItem(value = "no", text = "Norwegian"),
+      ),
     ),
   )
 }

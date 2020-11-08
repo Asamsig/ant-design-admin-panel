@@ -40,7 +40,10 @@ import scala.scalajs.js.annotation.JSImport
       AntdLogin(
         LoginProps(
 //          defaultActiveKey = "tab1",
-          onSubmit = (errors, values) => console.log(values)
+          onSubmit = (errors, values) => {
+            console.log(errors)
+            console.log(values)
+          }
         )
       )(
 //        <Checkbox checked={this.state.autoLogin} onChange={this.changeAutoLogin}>

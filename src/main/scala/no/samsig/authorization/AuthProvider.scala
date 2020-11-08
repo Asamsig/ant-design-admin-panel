@@ -9,23 +9,21 @@ import slinky.core.annotations.react
 import slinky.core.facade.Hooks._
 import slinky.core.facade.ReactElement
 import typings.antDashDesignDashPro.antDashDesignDashProStrings
-import org.scalajs.dom.console
 import typings.react.reactMod.ReactText
-import typings.std.Date
 
 import scala.concurrent.{Future, Promise}
 import scala.scalajs.concurrent.JSExecutionContext.Implicits.queue
 import scala.scalajs.js
 import scala.scalajs.js.timers.SetTimeoutHandle
+import scala.util.Random
 
 @react object AuthProvider {
   type Props = ReactElement
-//  type Props = Unit
 
   case class State(
-      status: ProgressStates,
-      error: Option[String],
-      user: Option[User]
+      status: ProgressStates = Pending,
+      error: Option[String] = None,
+      user: Option[User] = None,
   )
 
   sealed trait ProgressStates
@@ -34,21 +32,22 @@ import scala.scalajs.js.timers.SetTimeoutHandle
   case object Success extends ProgressStates
 
   val component = FunctionalComponent[Props] { children =>
-    val (state, setState) = useState(State(Success, None, Some(User("Asamsig", "user"))))
-//    useEffect(
-//      () => {
-//        val (handle, futureValue) = delay(User("Asamsig" + Date.now(), "user"), 10000)
-//        futureValue.map(user => {
-//          console.log(user.toString)
-//          setState(_.copy(user = Some(user)))
-////          setState(_.copy("error", error = Some("Sorry, the server is reporting an error.")))
-//        })
-//        () =>
-//          js.timers.clearTimeout(handle)
-//      }
-//    )
-//    console.log(children)
-    console.log(state.toString)
+    val (state, setState) = useState(State())
+    useEffect(
+      () => {
+        val (handle, futureValue) = delay(User(Random.alphanumeric.filter(_.isLetter).take(8).mkString, "user"), 500)
+        futureValue.onComplete {
+          case scala.util.Success(user) =>
+            setState(_.copy(Success, user = Some(user)))
+          case scala.util.Failure(_) =>
+            setState(_.copy(Error, error = Some("Sorry, the server is reporting an error.")))
+        }
+        () =>
+          js.timers.clearTimeout(handle)
+      },
+      Seq()
+    )
+
     Contexts.UserContext.Provider(value = state.user)(
       state match {
         case State(Pending, _, _)       => PageLoading(PageLoadingProps(tip = "Loading content"))
